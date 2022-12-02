@@ -19,7 +19,7 @@ public class Menu {
 	
 	public static void main(String[] args) throws NoSuchAlgorithmException {
 		
-		int intentos = 0;
+		
 		
 		String password1 = hashPassword("password");
 		String password2 = hashPassword("123456");
@@ -34,16 +34,25 @@ public class Menu {
 		usuarios.add(user2);
 		usuarios.add(user3);
 				
-		Usuario logged = logIn();
 		
 		// falta hacer que si los intentos son > 3 se cierre la aplicacion
-		for (Usuario usuario : usuarios) {
-			if (logged.equals(usuario)) {
-				System.out.println("login correcto");
-			}
-		}
 		
-		try {
+		
+		int intentos = 0;
+		
+		do {
+			// Pedimos por consola que se identifique
+			Usuario logged = logIn();
+			
+			// Comprobamos que el usuario es correcto, sino, no continúa el menú y nos lo vuelve a preguntar hasta 2 veces más
+			for (Usuario usuario : usuarios) {
+				
+				if (logged.equals(usuario)) {
+					System.out.println("\n login correcto, bienvenido " + usuario.getNombre() + "\n");
+				
+				
+					try {
+			
 			// Primero creamos todos los objetos necesarios para el cifrado sim�trico:
 			// Creamos el generador de claves, elegimos el algoritmo AES		
 			KeyGenerator generadorSimetrica = KeyGenerator.getInstance("AES");
@@ -119,11 +128,29 @@ public class Menu {
 						System.out.println("La frase desencriptada es: " + new String(bytesFraseDescifrada));
 						break;
 				}
+				
 			}	while (continuar); 
+			
 		} catch (Exception e) {
 			System.out.println("Un error ha ocurrido... " + e.getMessage());
 			e.printStackTrace();
-		}
+		} 
+				}
+			} //Termina el menú
+			
+			// Si nunca ha entrado por usuario correcto, sale este mensajes, se incrementa el numero de intentos,
+			// y acaba dando el mensaje final cuando intentos = 3. Pero, si entra por usuario, 
+			// cuando termina, también sale este mensajes y vuelve a sumar un intento, y tras entrar tres veces acabas
+			//con los mismos mensajes. 
+				
+			System.out.println("\n Usuario incorrecto \n");
+				intentos++;
+				
+			if (intentos == 3) {
+						System.out.println("\n No tienes más intentos \n");
+					}		
+			
+		} while (intentos <3 );
 		
 	}
 
@@ -132,9 +159,9 @@ public class Menu {
 		md.update(password.getBytes());
 		String mensajeHashBase64 = Base64.getEncoder().encodeToString(md.digest());
 		return mensajeHashBase64;
-	}
-	
-	public static Usuario logIn() throws NoSuchAlgorithmException {
+	} 
+		
+		public static Usuario logIn() throws NoSuchAlgorithmException {
 		System.out.println("Introduzca su usuario: \n");
 		Scanner scanner = new Scanner(System.in);
 		String nombre = scanner.nextLine();
@@ -142,9 +169,8 @@ public class Menu {
 		System.out.println("Introduzca su password: \n");
 		String password = hashPassword(scanner.nextLine());
 		
-		
 		Usuario usuario = new Usuario(nombre, password);
-		return usuario;
+		return usuario;		
+		}
+
 	}
-	
-}
